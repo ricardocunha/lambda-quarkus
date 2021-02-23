@@ -1,0 +1,24 @@
+version: '3.8'
+services:
+  dynamodb-local:
+    image: "amazon/dynamodb-local:latest"
+    container_name: dynamodb-local
+    ports:
+      - "8000:8000"
+    volumes:
+      - "./docker/dynamodb:/home/dynamodblocal/data"
+    working_dir: /home/dynamodblocal
+    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath /home/dynamodblocal"
+  quarkus-local:
+    image: ricardocunha/quarkus
+    container_name: quarkus-local
+    ports:
+      - "8080:8080"
+    depends_on:
+      - "dynamodb-local"
+    links:
+      - "dynamodb-local"
+    environment:
+      AWS_ACCESS_KEY_ID: 'test-key'
+      AWS_SECRET_ACCESS_KEY: 'test-secret'
+      REGION: 'eu-central-1'
